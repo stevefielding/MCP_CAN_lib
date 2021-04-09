@@ -4,10 +4,23 @@
 #include <mcp_can.h>
 #include <SPI.h>
 
-MCP_CAN CAN0(10);     // Set CS to pin 10
+MCP_CAN CAN0(PIN_SPI_SS);     // Set CS to pin 10
+
+#define POD_LED 22
+#define RS485_TX_EN 6
+#define SOL2_12V_EN 7
+#define SOL1_12V_EN 3
 
 void setup()
 {
+  pinMode(POD_LED, OUTPUT);
+  pinMode(RS485_TX_EN, OUTPUT);
+  digitalWrite(RS485_TX_EN, HIGH);
+  pinMode(SOL1_12V_EN, OUTPUT);
+  pinMode(SOL2_12V_EN, OUTPUT);
+  digitalWrite(SOL1_12V_EN, LOW);
+  digitalWrite(SOL2_12V_EN, LOW);
+
   Serial.begin(115200);
 
   // Initialize MCP2515 running at 16MHz with a baudrate of 500kb/s and the masks and filters disabled.
@@ -28,7 +41,10 @@ void loop()
   } else {
     Serial.println("Error Sending Message...");
   }
+  delay(100);
+  digitalWrite(POD_LED, HIGH);
   delay(100);   // send data per 100ms
+  digitalWrite(POD_LED, LOW);
 }
 
 /*********************************************************************************************************

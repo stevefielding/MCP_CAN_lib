@@ -12,9 +12,20 @@ char msgString[128];                        // Array to store serial string
 #define CAN0_INT 2                              // Set INT to pin 2
 MCP_CAN CAN0(10);                               // Set CS to pin 10
 
+#define POD_LED 22
+#define RS485_TX_EN 6
+#define SOL2_12V_EN 7
+#define SOL1_12V_EN 3
 
 void setup()
 {
+  pinMode(POD_LED, OUTPUT);
+  pinMode(RS485_TX_EN, OUTPUT);
+  digitalWrite(RS485_TX_EN, HIGH);
+  pinMode(SOL1_12V_EN, OUTPUT);
+  pinMode(SOL2_12V_EN, OUTPUT);
+  digitalWrite(SOL1_12V_EN, LOW);
+  digitalWrite(SOL2_12V_EN, LOW);
   Serial.begin(115200);
   
   // Initialize MCP2515 running at 16MHz with a baudrate of 500kb/s and the masks and filters disabled.
@@ -34,6 +45,7 @@ void loop()
 {
   if(!digitalRead(CAN0_INT))                         // If CAN0_INT pin is low, read receive buffer
   {
+    digitalWrite(POD_LED, HIGH);
     CAN0.readMsgBuf(&rxId, &len, rxBuf);      // Read data: len = data length, buf = data byte(s)
     
     if((rxId & 0x80000000) == 0x80000000)     // Determine if ID is standard (11 bits) or extended (29 bits)
@@ -54,6 +66,7 @@ void loop()
     }
         
     Serial.println();
+    digitalWrite(POD_LED, LOW);
   }
 }
 
